@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Debate Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-comments"></i>
+                <span>Global Debate Hub</span>
+            </div>
+            <div class="nav-menu">
+                <button id="resourcesBtn" class="btn btn-secondary">
+                    <i class="fas fa-folder-open"></i> Resource Library
+                </button>
+                <button id="timerBtn" class="btn btn-secondary">
+                    <i class="fas fa-clock"></i> Debate Timer
+                </button>
+                <button id="statsBtn" class="btn btn-secondary">
+                    <i class="fas fa-chart-line"></i> Statistics
+                </button>
+                <button id="loginBtn" class="btn btn-primary">Login/Register</button>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="username"></span>
+                    <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Welcome to Global Debate Hub</h1>
+                <p class="hero-subtitle">A platform for intellectual discourse, resource sharing, and structured debates</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <span class="stat-number" id="totalVisits">0</span>
+                            <span class="stat-label">Total Visits</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-calendar-day"></i>
+                        <div>
+                            <span class="stat-number" id="todayVisits">0</span>
+                            <span class="stat-label">Today's Visits</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comment"></i>
+                        <div>
+                            <span class="stat-number" id="speechCount">0</span>
+                            <span class="stat-label">Speeches</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-file-upload"></i>
+                        <div>
+                            <span class="stat-number" id="resourceCount">0</span>
+                            <span class="stat-label">Resources</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current Time Display -->
+        <section class="time-section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Current Time</h2>
+            </div>
+            <div class="time-display">
+                <div class="time-main" id="currentTime">Loading...</div>
+                <div class="time-date" id="currentDate">Loading...</div>
+                <div class="time-server" id="serverTime">Server Time: Loading...</div>
+            </div>
+        </section>
+
+        <!-- Debate Timer Section -->
+        <section class="timer-section">
+            <div class="section-header">
+                <h2><i class="fas fa-hourglass-half"></i> Debate Timer</h2>
+                <div class="timer-status">
+                    <span class="status-indicator" id="timerStatus">Stopped</span>
+                </div>
+            </div>
+            <div class="timer-container">
+                <div class="timer-display" id="timerDisplay">05:00</div>
+                <div class="timer-controls">
+                    <button id="timerStart" class="btn btn-success">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button id="timerPause" class="btn btn-warning">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button id="timerReset" class="btn btn-danger">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button id="timerSet" class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Set Time
+                    </button>
+                </div>
+                <div class="timer-settings">
+                    <div class="setting-group">
+                        <label for="timerMinutes">Minutes:</label>
+                        <input type="number" id="timerMinutes" min="1" max="60" value="5">
+                    </div>
+                    <div class="setting-group">
+                        <label for="currentSpeaker">Current Speaker:</label>
+                        <input type="text" id="currentSpeaker" placeholder="Enter speaker name">
+                    </div>
+                    <button id="updateSpeaker" class="btn btn-secondary">
+                        <i class="fas fa-user-edit"></i> Update Speaker
+                    </button>
+                </div>
+                <div class="timer-info">
+                    <p><i class="fas fa-user"></i> Current Speaker: <span id="displaySpeaker">None</span></p>
+                    <p><i class="fas fa-history"></i> Total Time: <span id="totalTime">300</span> seconds</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Latest Speeches Section -->
+        <section class="speeches-section">
+            <div class="section-header">
+                <h2><i class="fas fa-bullhorn"></i> Latest Speeches</h2>
+                <button id="newSpeechBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Speech
+                </button>
+            </div>
+            <div id="speechesList" class="speeches-list">
+                <!-- Speeches will be loaded here -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Loading speeches...
+                </div>
+            </div>
+        </section>
+
+        <!-- Resource Library Section -->
+        <section class="resources-section">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> Resource Library</h2>
+                <button id="uploadResourceBtn" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload Resource
+                </button>
+            </div>
+            
+            <div class="resource-filters">
+                <select id="resourceCategory">
+                    <option value="all">All Categories</option>
+                    <option value="document">Documents</option>
+                    <option value="image">Images</option>
+                    <option value="code">Code Files</option>
+                    <option value="video">Videos</option>
+                    <option value="audio">Audio</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="resourceSort">
+                    <option value="newest">Newest First</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="download">Most Downloaded</option>
+                    <option value="likes">Most Liked</option>
+                </select>
+            </div>
+
+            <div id="resourcesList" class="resources-list">
+                <!-- Resources will be loaded here -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Loading resources...
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="statistics-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> Access Statistics</h2>
+                <button id="refreshStatsBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Page Views</h3>
+                        <p class="stat-value" id="pageViews">0</p>
+                        <p class="stat-trend">Today: <span id="todayPageViews">0</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Resource Downloads</h3>
+                        <p class="stat-value" id="totalDownloads">0</p>
+                        <p class="stat-trend">This week: <span id="weeklyDownloads">0</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Active Debates</h3>
+                        <p class="stat-value" id="activeDebates">0</p>
+                        <p class="stat-trend">Ongoing: <span id="ongoingDebates">0</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Community Members</h3>
+                        <p class="stat-value" id="communityMembers">0</p>
+                        <p class="stat-trend">New today: <span id="newMembers">0</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-chart-container">
+                <h3>Visits Over Time</h3>
+                <canvas id="visitsChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    
+    <!-- Resource Library Modal -->
+    <div id="resourcesModal" class="modal">
+        <div class="modal-content large">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-folder-open"></i> Resource Library</h2>
+            
+            <div class="resource-upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag and drop files here or click to select</p>
+                    <p class="upload-hint">Supported file types: Documents, Images, Code, etc. Max 100kB</p>
+                    <input type="file" id="fileInput" accept="*/*" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Select File
+                    </button>
+                </div>
+                
+                <div class="upload-form">
+                    <div class="form-group">
+                        <label for="uploadCategory">Category:</label>
+                        <select id="uploadCategory">
+                            <option value="document">Document</option>
+                            <option value="image">Image</option>
+                            <option value="code">Code</option>
+                            <option value="video">Video</option>
+                            <option value="audio">Audio</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadDescription">Description:</label>
+                        <textarea id="uploadDescription" placeholder="Describe the resource..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploaderName">Your Name:</label>
+                        <input type="text" id="uploaderName" placeholder="Optional">
+                    </div>
+                    <button id="submitUpload" class="btn btn-success">
+                        <i class="fas fa-upload"></i> Upload Resource
+                    </button>
+                </div>
+            </div>
+            
+            <div class="resources-list-container">
+                <h3>Available Resources</h3>
+                <div id="modalResourcesList" class="resources-list">
+                    <!-- Resources will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Speech Modal -->
+    <div id="speechModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-bullhorn"></i> New Speech</h2>
+            
+            <div class="speech-form">
+                <div class="form-group">
+                    <label for="speechSpeaker">Speaker Name:</label>
+                    <input type="text" id="speechSpeaker" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="speechTopic">Debate Topic:</label>
+                    <input type="text" id="speechTopic" placeholder="Enter debate topic" value="General Debate">
+                </div>
+                <div class="form-group">
+                    <label for="speechDuration">Duration (seconds):</label>
+                    <input type="number" id="speechDuration" min="10" max="600" value="60">
+                </div>
+                <div class="form-group">
+                    <label for="speechContent">Speech Content:</label>
+                    <textarea id="speechContent" placeholder="Enter your speech content..." rows="6" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button id="submitSpeech" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Speech
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="register">Register</button>
+            </div>
+            
+            <div id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <input type="text" id="loginUsername" placeholder="Username" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password" maxlength="20">
+                </div>
+                <button id="loginSubmit" class="btn btn-primary">Login</button>
+            </div>
+            
+            <div id="registerForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <input type="text" id="registerUsername" placeholder="Username (3-20 chars)" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" placeholder="Password (6-20 chars)" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerConfirm" placeholder="Confirm Password" maxlength="20">
+                </div>
+                <button id="registerSubmit" class="btn btn-primary">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
